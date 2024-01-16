@@ -19,7 +19,7 @@ const Landing = () => {
             }else{
                 const {data} = await axios.post('http://localhost:5000/api/room/create', {admin: username})
                 if(data.success){
-                    navigate(`/room/${data.room.code}`, {state:{code: data.room.code}})
+                    navigate(`/room/${data.room.code}`, {state:{code: data.room.code, username: username}})
                 }else{
                     console.log("some error occured: ", data.message);
                 }
@@ -38,13 +38,12 @@ const Landing = () => {
             else{
                 const {data} = await axios.post('http://localhost:5000/api/room/join',{username: name, room_code: roomcode})
                 if(data.success){
-                    navigate(`/room/${data.room.code}`, {state:{code: data.room.code}}) //TODO: Secure the room route so that not anyone can access the room. Use JWT and localstorage 
+                    navigate(`/room/${data.room.code}`, {state:{code: data.room.code, username: name}}) //TODO: Secure the room route so that not anyone can access the room. Use JWT and localstorage 
                 } else{
                     toast.error(data.message)
                 }
             }
         } catch (error) {
-            console.log(error.message);
             toast.error("Room doesn't exist!")
         }
     }

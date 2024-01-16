@@ -7,30 +7,31 @@ const Main = () => {
     const location = useLocation()
     const [xcood, setXcood] = useState(0)
     const [ycood, setYcood] = useState(0)
-    const [count, setCount] = useState(0)
+    const [room, setRoom] = useState(null)
     const [socket, setSocket] = useState(null)
     const [name, setName] = useState('')
+    const [code, setCode] = useState('')
 
 
     useEffect(()=>{
         const socketInstance = io("http://localhost:5000")
         setSocket(socketInstance)
+        setName(location.state.username)
+        setCode(location.state.code)
         socketInstance.on("connect", ()=>{
             socketInstance.emit("user:new", {code: location.state.code})
         })
         
-        
-        return ()=>{ 
+        return ()=>{
             socketInstance.disconnect()
         }
-        
     },[])
     
     if(socket){
         // console.log(socket.id === socketInstance.id)
 
         socket.on("user:join", (room)=>{
-            // console.log(room);
+            setRoom(room)
         })
 
         socket.on("mouse-location", (data)=>{
@@ -38,7 +39,10 @@ const Main = () => {
             setXcood(data.x)
             setYcood(data.y)
         })
-        
+
+        socket.on("user:left", (data)=>{
+            console.log(data);
+        })
     }
 
     const handleMouseEvent = (e)=>{
@@ -59,15 +63,15 @@ const Main = () => {
 
     return ( 
         <div className="main-container" onMouseMove={handleMouseEvent}>
-            hello
+            hello {name}
             {
-                count > 1
-                ?
-                <div style={style}>
-                    {name}
-                </div>
-                :
-                <div>{count} connection yet</div>
+                // room.count > 1
+                // ?
+                // <div style={style}>
+                //     {name}
+                // </div>
+                // :
+                <div>{room ? room.count : "0"} connection yet</div>
 
             }
         </div>
