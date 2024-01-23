@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import { useLocation } from "react-router-dom";
 import RoomDetail from "../Components/RoomDetail";
 import { Box } from "@mui/material";
+import { ReactSketchCanvas } from 'react-sketch-canvas';
 
 
 const Main = () => {
@@ -50,7 +51,7 @@ const Main = () => {
   const handleMouseEvent = (e) => {
     const x = e.clientX;
     const y = e.clientY;
-    // socket.emit("mouse-move", {x, y})
+    if(socket) socket.emit("mouse-move", {x, y})
   };
 
   const style = {
@@ -68,12 +69,33 @@ const Main = () => {
       minHeight="100svh"
       bgcolor="white"
       display="flex"
-      onMouseMove={handleMouseEvent}
-    >
+      gap="2rem"
+      justifyContent="center"
+      >
         <Box
             width="80%"
+            mt="2rem"
+            onMouseMove={handleMouseEvent}
         >
-            Canvas
+          {room && 
+            room.members.map(member => {
+              return(
+                member !== name ?
+                <Box style={style} key={member}>
+                  {member}
+                </Box>
+                :
+                ""
+              )
+            })
+          }
+          <ReactSketchCanvas
+            width="100%"
+            height="90%"
+            strokeWidth={4}
+            strokeColor="black"
+            backgroundImage="https://upload.wikimedia.org/wikipedia/commons/7/70/Graph_paper_scan_1600x1000_%286509259561%29.jpg"
+          />
         </Box>
         {room && <RoomDetail room={room} name={name} socket={socket}/>}
     </Box>
