@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import RoomDetail from "../Components/RoomDetail";
 import { Box } from "@mui/material";
 
+
 const Main = () => {
   const location = useLocation();
   const [xcood, setXcood] = useState(0);
@@ -13,13 +14,14 @@ const Main = () => {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
 
+
   useEffect(() => {
     const socketInstance = io("http://localhost:5000");
     setSocket(socketInstance);
     setName(location.state.username);
     setCode(location.state.code);
     socketInstance.on("connect", () => {
-      socketInstance.emit("user:new", { code: location.state.code });
+      socketInstance.emit("user:new", { code: location.state.code, username: location.state.username });
     });
 
     return () => {
@@ -41,7 +43,7 @@ const Main = () => {
     });
 
     socket.on("user:left", (data) => {
-      console.log(data);
+      setRoom(data.room);
     });
   }
 
@@ -73,7 +75,7 @@ const Main = () => {
         >
             Canvas
         </Box>
-        {room && <RoomDetail room={room} name={name}/>}
+        {room && <RoomDetail room={room} name={name} socket={socket}/>}
     </Box>
   );
 };
