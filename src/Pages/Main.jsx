@@ -9,8 +9,14 @@ const Main = () => {
   const location = useLocation();
   const canvasRef = useRef(null)
   const [ctx, setCtx] = useState(null)
-  const [xcood, setXcood] = useState(0);
-  const [ycood, setYcood] = useState(0);
+  const [x0cood, setX0cood] = useState(0);
+  const [y0cood, setY0cood] = useState(0);
+  const [x1cood, setX1cood] = useState(0);
+  const [y1cood, setY1cood] = useState(0);
+  const [x2cood, setX2cood] = useState(0);
+  const [y2cood, setY2cood] = useState(0);
+  const [x3cood, setX3cood] = useState(0);
+  const [y3cood, setY3cood] = useState(0);
   const [room, setRoom] = useState(null);
   const [socket, setSocket] = useState(null);
   const [name, setName] = useState("");
@@ -50,8 +56,29 @@ const Main = () => {
 
     socket.on("mouse:location", (data) => {
       // console.log(data)
-      setXcood(data.x);
-      setYcood(data.y);
+      if(room){
+        switch (data.memberName) {
+          case room.members[0]:
+            setX0cood(data.x);
+            setY0cood(data.y);
+            break;
+          case room.members[1]:
+            setX1cood(data.x);
+            setY1cood(data.y);
+            break;
+          case room.members[2]:
+            setX2cood(data.x);
+            setY2cood(data.y);
+            break;
+          case room.members[3]:
+            setX3cood(data.x);
+            setY3cood(data.y);
+            break;
+        
+          default:
+            break;
+        }
+      }
     });
 
     socket.on("user:left", (data) => {
@@ -76,7 +103,7 @@ const Main = () => {
       ctx.lineTo(x, y);
       ctx.stroke()
     }
-    if(socket) socket.emit("mouse:move", {code, x, y})
+    if(socket) socket.emit("mouse:move", {code, x, y, memberName: location.state.username})
   };
 
   const handleMouseDown = (e)=>{
@@ -88,15 +115,6 @@ const Main = () => {
   const handleMouseUp = (e)=>{
     setMouseDown(false)
   }
-
-  const style = {
-    position: "absolute",
-    border: "1px solid red",
-    padding: "0.5rem",
-    color: "black",
-    left: `${xcood}px`,
-    top: `${ycood}px`,
-  };
 
   return (
     <Box
@@ -118,10 +136,34 @@ const Main = () => {
             border="1px solid black"
         >
           {room && 
-            room.members.map(member => {
+            room.members.map((member, index) => {
+              var x, y;
+              if(index === 0){
+                x = x0cood
+                y = y0cood
+              }
+              else if(index === 1){
+                x = x1cood
+                y = y1cood
+              }
+              if(index === 2){
+                x = x2cood
+                y = y2cood
+              }
+              if(index === 3){
+                x = x3cood
+                y = y3cood
+              }
               return(
                 member !== name ?
-                <Box style={style} key={member}>
+                <Box 
+                  position="absolute" 
+                  left={`${x}px`}
+                  top={`${y}px`} 
+                  border="1px solid red" 
+                  padding="0.5rem" 
+                  key={member}
+                >
                   {member}
                 </Box>
                 :
