@@ -17,7 +17,7 @@ const Landing = () => {
             if(!username){
                 toast.error("Enter your name!")
             }else{
-                const {data} = await axios.post('http://localhost:5000/api/room/create', {admin: username})
+                const {data} = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/room/create`, {admin: username})
                 if(data.success){
                     navigate(`/room/${data.room.code}`, {state:{code: data.room.code, username: username}})
                 }else{
@@ -36,7 +36,7 @@ const Landing = () => {
             }
             else if(roomcode.length !== 6) toast.error("Check your room code")
             else{
-                const {data} = await axios.post('http://localhost:5000/api/room/join',{username: name, room_code: roomcode})
+                const {data} = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/room/join`,{username: name, room_code: roomcode})
                 if(data.success){
                     navigate(`/room/${data.room.code}`, {state:{code: data.room.code, username: name}}) //TODO: Secure the room route so that not anyone can access the room. Use JWT and localstorage 
                 } else{

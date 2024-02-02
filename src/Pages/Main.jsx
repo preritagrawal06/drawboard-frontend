@@ -34,7 +34,7 @@ const Main = () => {
   },[])
 
   useEffect(() => {
-    const socketInstance = io("http://localhost:5000");
+    const socketInstance = io(process.env.REACT_APP_BASE_URL);
     setSocket(socketInstance);
     setName(location.state.username);
     setCode(location.state.code);
