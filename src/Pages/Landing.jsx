@@ -1,4 +1,5 @@
-import { Box, TextField, Button } from "@mui/material";
+import { Box, TextField, Button, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,14 +12,17 @@ const Landing = () => {
     const [username, setUsername] = useState('')
     const [name, setName] = useState('')
     const [roomcode, setRoomcode] = useState('')
+    const [loading, setLoading] = useState(false)
     
     const handleCreate = async()=>{
         try {
             if(!username){
                 toast.error("Enter your name!")
             }else{
+                setLoading(true)
                 const {data} = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/room/create`, {admin: username})
                 if(data.success){
+                    setLoading(false)
                     navigate(`/room/${data.room.code}`, {state:{code: data.room.code, username: username}})
                 }else{
                     console.log("some error occured: ", data.message);
@@ -50,7 +54,11 @@ const Landing = () => {
 
     return ( 
         <>
-            <Box minHeight="100svh" display="flex" alignItems="center" justifyContent="center">
+            <Box minHeight="100svh" display="flex" gap="4rem" flexDirection="column" alignItems="center" justifyContent="center">
+                <Box textAlign="center">
+                    <Typography variant="h1" color="black" fontFamily="Cabin Sketch, sans-serif" sx={{fontSize:{xs:"3rem", sm:"5rem"}}}>Drawboard</Typography>
+                    <Typography variant="p" color="black" fontFamily="Cabin Sketch, sans-serif">Draw with your friends</Typography>
+                </Box>
                 <Box className="landing-input-container" gap="2rem">
                     <Box display="flex" flexDirection="column" alignItems="center" gap="1rem">
                         <TextField
@@ -59,9 +67,9 @@ const Landing = () => {
                         value={username}
                         onChange={(e)=>{setUsername(e.target.value)}}
                         />
-                        <Button variant="contained" color="primary" onClick={handleCreate}>
+                        <LoadingButton loading={loading} variant="contained" color="primary" onClick={handleCreate}>
                         Create Room
-                        </Button>
+                        </LoadingButton>
                     </Box>
                     <Box width="100%" display="flex" alignItems="center" justifyContent="center">
                         <hr style={{color:"black", width:"40%"}}/>

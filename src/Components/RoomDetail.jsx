@@ -21,19 +21,19 @@ const RoomDetail = ({room, name, socket}) => {
     return ( 
         <Box p="1rem" my="5rem" display="flex" flexDirection="column" alignItems="center" justifyContent="space-between" gap="1rem" borderRadius="1rem" border="1px solid black">
             <Box display="flex" flexDirection="column" alignItems="center" gap="1rem">
-                <Typography variant="h4" color="initial">Hello {name}</Typography>
-                <Typography variant="p" color="initial">
+                <Typography variant="h4" color="initial" fontFamily="Cabin Sketch, sans-serif">Hello {name}</Typography>
+                <Typography variant="p" color="initial"fontFamily="Cabin Sketch, sans-serif">
                     Your Room Code: {room.code} 
                     <IconButton aria-label="copy-button"  onClick={copyToClipboard}>
                         <ContentCopyIcon fontSize="small"/>
                     </IconButton>
                 </Typography>
                 <Box width="100%" display="flex" flexDirection="column">
-                    <Typography variant="h5">Members:</Typography>
+                    <Typography variant="h5" fontFamily="Cabin Sketch, sans-serif">Members:</Typography>
                     {
                         room.members.map((member, index)=>{
                             return(
-                                <Typography key={index} variant="h6">
+                                <Typography key={index} variant="h6" fontFamily="Cabin Sketch, sans-serif">
                                     {index+1}. {member} {name === member ? "(You)" : ""} {room.admin === member ? <WorkspacePremiumIcon sx={{color: "#FFD700"}}/> : ""}
                                 </Typography>
                             )
