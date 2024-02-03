@@ -4,7 +4,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useNavigate } from "react-router-dom";
 
 
-const RoomDetail = ({room, name, socket}) => {
+const RoomDetail = ({room, name, chooseColor, socket}) => {
 
     const navigate = useNavigate()
 
@@ -15,6 +15,7 @@ const RoomDetail = ({room, name, socket}) => {
     const handleLeaveRoom = ()=>{
         socket.emit("user:leave", {code: room.code, name: name})
         socket.disconnect()
+        localStorage.removeItem('room')
         navigate('/', {replace: true})
     }
 
@@ -41,9 +42,12 @@ const RoomDetail = ({room, name, socket}) => {
                     }
                 </Box>
             </Box>
-            <Button variant="contained" color="error" onClick={handleLeaveRoom}>
-              Leave Room
-            </Button>
+            <Box display="flex" flexDirection="column" alignItems="center" gap="2rem">
+                <input type="color" onChange={e  => {chooseColor(e.target.value)}}/>
+                <Button variant="contained" color="error" onClick={handleLeaveRoom}>
+                Leave Room
+                </Button>
+            </Box>
         </Box>
      );
 }

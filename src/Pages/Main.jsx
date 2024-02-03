@@ -1,14 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import RoomDetail from "../Components/RoomDetail";
 import { Box } from "@mui/material";
 
 
 const Main = () => {
+  const navigate = useNavigate()
   const location = useLocation();
   const canvasRef = useRef(null)
   const [ctx, setCtx] = useState(null)
+  const [color, setColor] = useState('#000000')
   const [x0cood, setX0cood] = useState(0);
   const [y0cood, setY0cood] = useState(0);
   const [x1cood, setX1cood] = useState(0);
@@ -25,11 +27,10 @@ const Main = () => {
 
 
   useEffect(()=>{
-    
-        const canvas = canvasRef.current
-        canvas.width = document.getElementById('canvas-container').offsetWidth
-        canvas.height = document.getElementById('canvas-container').offsetHeight
-        setCtx(canvas.getContext('2d'))
+    const canvas = canvasRef.current
+    canvas.width = document.getElementById('canvas-container').offsetWidth
+    canvas.height = document.getElementById('canvas-container').offsetHeight
+    setCtx(canvas.getContext('2d'))
 
   },[])
 
@@ -87,11 +88,14 @@ const Main = () => {
 
     socket.on("mouse:ondraw", (data)=>{
       ctx.lineTo(data.x, data.y)
+      console.log(data.color)
+      ctx.strokeStyle = data.color
       ctx.stroke()
     })
 
     socket.on("mouse:onDown", (data)=>{
       ctx.moveTo(data.x, data.y)
+      ctx.beginPath()
     })
   }
 
@@ -99,8 +103,9 @@ const Main = () => {
     const x = e.clientX;
     const y = e.clientY;
     if(mouseDown){
-      socket.emit('mouse:draw', {code, x, y})
-      ctx.lineTo(x, y);
+      socket.emit('mouse:draw', {code, x, y, color})
+      ctx.lineTo(x, y)
+      ctx.strokeStyle = color
       ctx.stroke()
     }
     if(socket) socket.emit("mouse:move", {code, x, y, memberName: location.state.username})
@@ -114,6 +119,13 @@ const Main = () => {
 
   const handleMouseUp = (e)=>{
     setMouseDown(false)
+  }
+
+
+  // callback function for roomDetails child component to handle change of color
+  const chooseColor = (color)=>{
+    setColor(color)
+    ctx.beginPath() //This helps to change the color for the new  drawings
   }
 
   return (
@@ -180,7 +192,7 @@ const Main = () => {
           /> */}
           <canvas ref={canvasRef}/>
         </Box>
-        {room && <RoomDetail room={room} name={name} socket={socket}/>}
+        {room && <RoomDetail room={room} name={name} chooseColor={chooseColor} socket={socket}/>}
     </Box>
   );
 };
