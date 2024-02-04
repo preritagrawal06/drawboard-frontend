@@ -28,9 +28,24 @@ const Main = () => {
 
   useEffect(()=>{
     const canvas = canvasRef.current
-    canvas.width = document.getElementById('canvas-container').offsetWidth
-    canvas.height = document.getElementById('canvas-container').offsetHeight
+    var height = document.getElementById('canvas-container').offsetHeight
+    var width = document.getElementById('canvas-container').offsetWidth
+    canvas.width = width
+    canvas.height = height
     setCtx(canvas.getContext('2d'))
+
+    const handleResize = ()=>{
+      height = document.getElementById('canvas-container').offsetHeight
+      width = document.getElementById('canvas-container').offsetWidth
+      canvas.width = width
+      canvas.height = height
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    return ()=>{
+      window.removeEventListener('resize', handleResize)
+    }
 
   },[])
 
@@ -100,8 +115,14 @@ const Main = () => {
   }
 
   const handleMouseEvent = (e) => {
-    const x = e.clientX;
-    const y = e.clientY;
+    var x, y
+    if(e.type === 'touchmove'){
+      x = e.touches[0].clientX;
+      y = e.touches[0].clientY;
+    }else{
+      x = e.clientX;
+      y = e.clientY;
+    }
     if(mouseDown){
       socket.emit('mouse:draw', {code, x, y, color})
       ctx.lineTo(x, y)
@@ -112,8 +133,16 @@ const Main = () => {
   };
 
   const handleMouseDown = (e)=>{
-    ctx.moveTo(e.clientX, e.clientY)
-    socket.emit("mouse:down", {code, x: e.clientX, y: e.clientY})
+    var x, y
+    if(e.type === 'touchmove'){
+      x = e.touches[0].clientX;
+      y = e.touches[0].clientY;
+    }else{
+      x = e.clientX;
+      y = e.clientY;
+    }
+    ctx.moveTo(x, y)
+    socket.emit("mouse:down", {code, x, y})
     setMouseDown(true)
   }
 
@@ -136,6 +165,7 @@ const Main = () => {
       display="flex"
       gap="2rem"
       justifyContent="center"
+      sx={{flexDirection:{xs:"column", sm:"row"}, alignItems:{xs:"center", sm:"inherit"}}}
       >
         <Box
             width="80%"
@@ -145,6 +175,9 @@ const Main = () => {
             onMouseMove={handleMouseEvent}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
+            onTouchMove={handleMouseEvent}
+            onTouchStart={handleMouseDown}
+            onTouchEnd={handleMouseUp}
             border="1px solid black"
         >
           {room && 
