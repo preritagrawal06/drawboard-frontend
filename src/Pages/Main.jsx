@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import { useLocation, useNavigate } from "react-router-dom";
 import RoomDetail from "../Components/RoomDetail";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 
 const Main = () => {
@@ -103,7 +103,7 @@ const Main = () => {
 
     socket.on("mouse:ondraw", (data)=>{
       ctx.lineTo(data.x, data.y)
-      console.log(data.color)
+      // console.log(data.color)
       ctx.strokeStyle = data.color
       ctx.stroke()
     })
@@ -204,12 +204,14 @@ const Main = () => {
                 <Box 
                   position="absolute" 
                   left={`${x}px`}
-                  top={`${y}px`} 
-                  border="1px solid red" 
-                  padding="0.5rem" 
+                  top={`${y}px`}
+                  bgcolor="red"
+                  padding="0.25rem 0.5rem" 
                   key={member}
                 >
-                  {member}
+                  <Typography variant="body1" fontWeight="600" fontSize="1rem" color="white">
+                    {member}
+                  </Typography>
                 </Box>
                 :
                 ""
